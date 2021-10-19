@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from .models import fs_acuserprofiles
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
@@ -8,18 +8,20 @@ from flask_login import login_user, login_required, logout_user, current_user
 auth = Blueprint('auth', __name__)
 
 
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
+        username = request.form.get('username')
         password = request.form.get('password')
 
-        user = fs_acuserprofiles.query.filter_by(Email=email).first()
+        user = fs_acuserprofiles.query.filter_by(UserName=username).first()
         if user:
             if check_password_hash(user.PasswordHash, password):
                 flash('Logged in successfully!', category='success')
-                login_user(user, remember=True)
+                login_user(user, remember=True)               
                 return redirect(url_for('views.home'))
+                #return render_template('home.html', user=current_user)
             else:
                 flash('Incorrect password, try again.', category='error')
         else:
@@ -55,7 +57,7 @@ def register():
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', category='error')
         else:
-            new_user = fs_acuserprofiles(EmployeeId=1, Email=email, FirstName=first_name, LastName='MONYONCHO', UserName='kmonyoncho', PasswordHash=generate_password_hash(
+            new_user = fs_acuserprofiles(EmployeeId=2, Email=email, FirstName=first_name, LastName='Media', UserName='kmonyoncho', PasswordHash=generate_password_hash(
                 password1, method='sha256'))
             db.session.add(new_user)
             db.session.commit()

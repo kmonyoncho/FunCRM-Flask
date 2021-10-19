@@ -1,48 +1,48 @@
-{% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block
-content %}
-<form method="POST">
-  <h3 align="center">Sign Up</h3>
-  <div class="form-group">
-    <label for="email">Email Address</label>
-    <input
-      type="email"
-      class="form-control"
-      id="email"
-      name="email"
-      placeholder="Enter email"
-    />
+{% extends "base.html" %} {% block title %}Register{% endblock %} {% block content
+%}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+</head>
+
+<body>
+  <div class="login">
+    <h1>Enter Login Credentials</h1>
+    <div class="links">
+      <a href="{{ url_for('auth.login') }}" >Login</a>
+      <a href="{{ url_for('auth.register') }}" class="active">Register</a>
+    </div>
+    <form action="{{ url_for('auth.register') }}" method="POST">
+
+      <label for="username"><i class="fas fa-user"></i></label>
+      <input type="text" name="username" placeholder="Username" id="username" required>         
+     
+      <label for="email"><i class="fas fa-user"></i></label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" />
+     
+      <label for="firstName"><i class="fas fa-user"></i></label>
+      <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter First Name" />
+      
+      <label for="lastName"><i class="fas fa-user"></i></label>
+      <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter Last Name" />
+     
+      <label for="phone"><i class="fas fa-user"></i></label>
+      <input type="text" class="form-control" id="phonenumber" name="phonenumber" placeholder="Enter Phone Number" />
+      
+      <label for="password"><i class="fas fa-lock"></i></label>
+      <input type="password" name="password" placeholder="Password" id="password" required>
+     
+      <label for="password2">Password (Confirm)</label>
+      <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm password" />
+      <div class="msg">{{ msg }}</div>
+      <input type="submit" value="Login">
+    </form>
   </div>
-  <div class="form-group">
-    <label for="firstName">First Name</label>
-    <input
-      type="text"
-      class="form-control"
-      id="firstName"
-      name="firstName"
-      placeholder="Enter first name"
-    />
-  </div>
-  <div class="form-group">
-    <label for="password1">Password</label>
-    <input
-      type="password"
-      class="form-control"
-      id="password1"
-      name="password1"
-      placeholder="Enter password"
-    />
-  </div>
-  <div class="form-group">
-    <label for="password2">Password (Confirm)</label>
-    <input
-      type="password"
-      class="form-control"
-      id="password2"
-      name="password2"
-      placeholder="Confirm password"
-    />
-  </div>
-  <br />
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</body>
+
+</html>
 {% endblock %}
