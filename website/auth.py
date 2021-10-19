@@ -27,7 +27,7 @@ def login():
         else:
             flash('Email does not exist.', category='error')
 
-    return render_template("login.html", user=current_user)
+    return render_template("login.html")
 
 
 @auth.route('/logout')
@@ -38,11 +38,15 @@ def logout():
 
 
 @auth.route('/register', methods=['GET', 'POST'])
+@login_required
 def register():
     if request.method == 'POST':
         email = request.form.get('email')
+        username = request.form.get('username')
         first_name = request.form.get('firstName')
-        password1 = request.form.get('password1')
+        last_name = request.form.get('lastName')
+        phone_number = request.form.get('phonenumber')
+        password1 = request.form.get('password')
         password2 = request.form.get('password2')
 
         user = fs_acuserprofiles.query.filter_by(Email=email).first()
@@ -57,7 +61,7 @@ def register():
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', category='error')
         else:
-            new_user = fs_acuserprofiles(EmployeeId=2, Email=email, FirstName=first_name, LastName='Media', UserName='kmonyoncho', PasswordHash=generate_password_hash(
+            new_user = fs_acuserprofiles(EmployeeId=2, Email=email, FirstName=first_name, LastName=last_name, UserName=username, PhoneNumber=phone_number, PasswordHash=generate_password_hash(
                 password1, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
