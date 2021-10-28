@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
+
 db = SQLAlchemy()
 migrate = Migrate()
 
@@ -27,12 +28,12 @@ def create_app():
         db.create_all()
 
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = "auth.login"
     login_manager.init_app(app)
 
     @login_manager.user_loader
-    def load_user(Id):
-        return fs_acuserprofiles.query.get(int(Id))
+    def load_user(id):
+        return fs_acuserprofiles.query.get(int(id))
 
     return app
 

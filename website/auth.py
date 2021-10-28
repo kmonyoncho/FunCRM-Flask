@@ -19,15 +19,14 @@ def login():
         if user:
             if check_password_hash(user.PasswordHash, password):
                 flash('Logged in successfully!', category='success')
-                login_user(user, remember=True)               
-                return redirect(url_for('views.home'))
-                #return render_template('home.html', user=current_user)
+                login_user(user, remember=True)                
+                return redirect(url_for('views.home'))                
             else:
                 flash('Incorrect password, try again.', category='error')
         else:
-            flash('Email does not exist.', category='error')
+            flash('Username does not exist.', category='error')
 
-    return render_template("login.html")
+    return render_template("login.html", next=request.url,user=current_user)
 
 
 @auth.route('/logout')
@@ -38,7 +37,6 @@ def logout():
 
 
 @auth.route('/register', methods=['GET', 'POST'])
-@login_required
 def register():
     if request.method == 'POST':
         email = request.form.get('email')
