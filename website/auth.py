@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+
+from website.forms import LoginForm, UserRegistrationForm
 from .models import fs_acuserprofiles
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
@@ -11,18 +13,19 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        user = fs_acuserprofiles.query.filter_by(UserName=username).first()
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = fs_acuserprofiles.query.filter_by(UserName=form.username.data).first()
         if user:
-            if check_password_hash(user.PasswordHash, password):
+            if check_password_hash(user.PasswordHash, form.password):
                 flash('Logged in successfully!', category='success')
-                login_user(user, remember=True)                
-                return redirect(url_for('views.home'))                
+                login_user(user, remember=form.remember.data)   
+                next_page = request.args.get('next')             
+                return redirect(next_page) if next_page else redirect(url_for('views.home'))
             else:
-                flash('Incorrect password, try again.', category='error')
+                flash('Incorrect password, try again!', category='error')
         else:
             flash('Username does not exist.', category='error')
 
@@ -38,33 +41,18 @@ def logout():
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        username = request.form.get('username')
-        first_name = request.form.get('firstName')
-        last_name = request.form.get('lastName')
-        phone_number = request.form.get('phonenumber')
-        password1 = request.form.get('password')
-        password2 = request.form.get('password2')
+    if request.method == 'POST':        
 
-        user = fs_acuserprofiles.query.filter_by(Email=email).first()
-        if user:
-            flash('Email already exists.', category='error')
-        elif len(email) < 4:
-            flash('Email must be greater than 3 characters.', category='error')
-        elif len(first_name) < 2:
-            flash('First name must be greater than 1 character.', category='error')
-        elif password1 != password2:
-            flash('Passwords don\'t match.', category='error')
-        elif len(password1) < 7:
-            flash('Password must be at least 7 characters.', category='error')
-        else:
-            new_user = fs_acuserprofiles(EmployeeId=2, Email=email, FirstName=first_name, LastName=last_name, UserName=username, PhoneNumber=phone_number, PasswordHash=generate_password_hash(
-                password1, method='sha256'))
+        if current_user.is_authenticated:
+            return redirect(url_for('home'))
+        form = UserRegistrationForm()  
+        if form.validate_on_submit():
+            new_user = fs_acuserprofiles(EmployeeId=2, Email=form.email.data, FirstName=form.firstname.data, LastName=form.lastname.data, UserName=form.username.data, PhoneNumber=form.phonenumber.data, PasswordHash=generate_password_hash(
+                form.password.data, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
-            flash('Account created!', category='success')
-            return redirect(url_for('views.home'))
+            flash('Account created Successfully!', category='success')
+            return redirect(url_for('login'))
 
-    return render_template("register.html", user=current_user)
+    return render_template("register.html", title='User Register', form=form, user=current_user)
